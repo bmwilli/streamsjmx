@@ -10,6 +10,11 @@
   <dependencies>
     <!-- addjars plugin below adds InfoSphere Streams JMX dependencies from Streams install location (required to build) -->
     <dependency>
+      <groupId>com.beust</groupId>
+      <artifactId>jcommander</artifactId>
+      <version>1.48</version>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
