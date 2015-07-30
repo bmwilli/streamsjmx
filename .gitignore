@@ -13,3 +13,6 @@ hs_err_pid*
 
 # gedit save files
 *~
+
+# vi save files
+*.swp
