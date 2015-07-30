@@ -29,11 +29,12 @@ public class Client {
       //String user = args[2];    // use streamtool setacl or streamtool setdomainacl to assign required permissions
       //String password = args[3];
 
-      // Parse command line arguments
+
       CommandLineArgs cla = new CommandLineArgs();
       //String[] argv = {};
       JCommander cmd = new JCommander(cla);
 
+      // Parse command line arguments
       try {
         cmd.parse(args);
         System.out.println("jmxURL: " + cla.jmxUrl + ", domainName: " + cla.domainName + ", user: " + cla.user + ", password: " + cla.password);
