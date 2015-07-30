@@ -16,40 +16,52 @@ import com.beust.jcommander.ParameterException;
 import com.ibm.streams.management.domain.DomainMXBean;
 import com.ibm.streams.management.ObjectNameBuilder;
 
-// java -jar xxx service:jmx:jmxmp://server:9975 domainA user password
-
-
+import bmwilli.streamsjmx.commandlineargs.HelpArgs;
+import bmwilli.streamsjmx.commandlineargs.GetDomainStateArgs;
+import bmwilli.streamsjmx.commandlineargs.GetResourceStateArgs;
 
 public class Client {
   public static void main(String [] args) {
     try { 
 
-      //String jmxUrl = args[0];  // use streamtool getjmxconnect to find
-      //String domainName = args[1];
-      //String user = args[2];    // use streamtool setacl or streamtool setdomainacl to assign required permissions
-      //String password = args[3];
+      HelpArgs helpArgs = new HelpArgs();
+      GetDomainStateArgs getdomainstateArgs = new GetDomainStateArgs();
+      GetResourceStateArgs getresourcestateArgs = new GetResourceStateArgs();
 
-
-      CommandLineArgs cla = new CommandLineArgs();
+      //CommandLineArgs cla = new CommandLineArgs();
       //String[] argv = {};
-      JCommander cmd = new JCommander(cla);
+      JCommander cmd = new JCommander();
+      cmd.addCommand("help", helpArgs);
+      cmd.addCommand("getdomainstate", getdomainstateArgs);
+      cmd.addCommand("getresourcestate", getresourcestateArgs);
 
       // Parse command line arguments
       try {
         cmd.parse(args);
-        System.out.println("jmxURL: " + cla.jmxUrl + ", domainName: " + cla.domainName + ", user: " + cla.user + ", password: " + cla.password);
+
+        if ("help".equals(cmd.getParsedCommand())) {
+          cmd.usage();
+        } else if ("getdomainstate".equals(cmd.getParsedCommand())) {
+          System.out.println("getdomainstate: jmxURL: " + getdomainstateArgs.jmxUrl + ", domainName: " + getdomainstateArgs.domainName + ", user: " + getdomainstateArgs.user + ", password: " + getdomainstateArgs.password);
+        } else if ("getresourcestate".equals(cmd.getParsedCommand())) {
+          System.out.println("getresourcestate: jmxURL: " + getresourcestateArgs.jmxUrl + ", domainName: " + getresourcestateArgs.domainName + ", user: " + getresourcestateArgs.user + ", password: " + getresourcestateArgs.password);
+        } else {
+          System.out.println("Unrecognized command.");
+          System.out.println("Use the 'help' command to dipslay usage");
+          System.exit(1);
+        }
       } catch (ParameterException ex) {
-        System.out.println(ex.getMessage());
-        cmd.usage();
+        System.out.println("command exception: " + ex.getMessage());
+        System.out.println("Use the 'help' command to dipslay usage");
         System.exit(1);
       }
 
+      System.exit(0);
 
-
-      String jmxUrl = cla.jmxUrl;
-      String domainName = cla.domainName;
-      String user = cla.user;
-      String password = cla.password;
+      String jmxUrl = getdomainstateArgs.jmxUrl;
+      String domainName = getdomainstateArgs.domainName;
+      String user = getdomainstateArgs.user;
+      String password = getdomainstateArgs.password;
 
       HashMap<String,Object> env = new HashMap<String,Object>();
       String [] creds = {user, password};
