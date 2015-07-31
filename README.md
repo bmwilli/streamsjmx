@@ -14,8 +14,9 @@ mvn package
 
 ## Run
 
-This is just for the current test and will evolve:
+streamsjmx is command based.  Over time it will evolve to add more and more commands.
+To get a list of current commands and command syntax:
 
 ```
-java -jar target/executable-streamsjmx-4.0.0.0-SNAPSHOT.jar <jmxurl> <domainId> <userid> <passwd>
+java -jar target/executable-streamsjmx-4.0.0.0-SNAPSHOT.jar help
 ```
