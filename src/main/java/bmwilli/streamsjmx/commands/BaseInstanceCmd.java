@@ -4,13 +4,12 @@ import javax.management.JMX;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
-import com.beust.jcommander.Parameters;
 import com.beust.jcommander.Parameter;
 
 import com.ibm.streams.management.instance.InstanceMXBean;
 import com.ibm.streams.management.ObjectNameBuilder;
 
-public class BaseInstanceCmd extends BaseDomainCmd {
+public abstract class BaseInstanceCmd extends BaseDomainCmd {
 
   @Parameter(names = "-i", description = "Streams instance name", required=true)
   public String instanceName;

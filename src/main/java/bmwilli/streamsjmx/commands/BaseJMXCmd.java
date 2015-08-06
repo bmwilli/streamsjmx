@@ -10,8 +10,6 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
-import bmwilli.streamsjmx.commandlineargs.ArgsBase;
-
 // Most commands are going to require making the jmx connection so define this once
 public abstract class BaseJMXCmd implements Cmd {
 

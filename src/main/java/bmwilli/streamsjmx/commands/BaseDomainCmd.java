@@ -4,13 +4,12 @@ import javax.management.JMX;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
-import com.beust.jcommander.Parameters;
 import com.beust.jcommander.Parameter;
 
 import com.ibm.streams.management.domain.DomainMXBean;
 import com.ibm.streams.management.ObjectNameBuilder;
 
-public class BaseDomainCmd extends BaseJMXCmd {
+public abstract class BaseDomainCmd extends BaseJMXCmd {
 
   @Parameter(names = "-d", description = "Streams domain name", required=true)
   private String domainName;

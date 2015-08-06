@@ -1,8 +1,5 @@
 package bmwilli.streamsjmx;
 
-import java.util.Map; 
-
-import com.beust.jcommander.Parameter;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
