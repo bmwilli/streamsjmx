@@ -1,51 +1,68 @@
 package bmwilli.streamsjmx;
 
+import java.util.Map; 
+
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
-import bmwilli.streamsjmx.commandlineargs.CommandLineArgs;
-import bmwilli.streamsjmx.commandlineargs.HelpArgs;
-import bmwilli.streamsjmx.commandlineargs.GetDomainStateArgs;
-import bmwilli.streamsjmx.commandlineargs.GetResourceStateArgs;
-
+import bmwilli.streamsjmx.CommandLineArgs;
+import bmwilli.streamsjmx.commands.Cmd;
+import bmwilli.streamsjmx.commands.Help;
 import bmwilli.streamsjmx.commands.GetDomainState;
+import bmwilli.streamsjmx.commands.GetResourceState;
+
 
 public class Client {
   public static void main(String [] args) {
     String programName = "streamsjmx";
+    String parsedCommand;
 
     try { 
-      HelpArgs helpArgs = new HelpArgs();
-      GetDomainStateArgs getdomainstateArgs = new GetDomainStateArgs();
-      GetResourceStateArgs getresourcestateArgs = new GetResourceStateArgs();
 
       CommandLineArgs cla = new CommandLineArgs();
-
       JCommander cmd = new JCommander(cla);
+
       cmd.setProgramName(programName);
-      cmd.addCommand("help", helpArgs);
-      cmd.addCommand("getdomainstate", getdomainstateArgs);
-      cmd.addCommand("getresourcestate", getresourcestateArgs);
+
+      // Create and add the commands
+
+      cmd.addCommand("help", new Help());
+      cmd.addCommand("getdomainstate", new GetDomainState());
+      cmd.addCommand("getresourcestate", new GetResourceState());
 
       // Parse command line arguments
       try {
         cmd.parse(args);
+        parsedCommand = cmd.getParsedCommand();
 
-        if (cla.help || "help".equals(cmd.getParsedCommand())) {
+        // Help option or a command
+        if ((cla.help) || (parsedCommand == "help")) {
           cmd.usage();
+          System.exit(0);
+        }
 
-        } else if ("getdomainstate".equals(cmd.getParsedCommand())) {
-          GetDomainState gdsCmd = new GetDomainState(getdomainstateArgs);
-          gdsCmd.run();
+        // Its a regular command, get a JCommander object specific to the command
+        JCommander parsedJCommander = cmd.getCommands().get(parsedCommand);
 
-        } else if ("getresourcestate".equals(cmd.getParsedCommand())) {
-          System.out.println("** Command Not Implemented Yet **");
 
-        } else {
-          System.out.println("Unrecognized command.");
-          System.out.println("Use the 'help' command to dipslay usage");
-          System.exit(1);
+        // Need to switch to factory pattern for commands and figure how to handle arguments
+
+	// Handle Commands
+        Cmd theCmd;
+        switch(parsedCommand) {
+          case "help":
+            cmd.usage();
+            break;
+          case "getdomainstate":
+          case "getresourcestate":
+            theCmd = (Cmd)parsedJCommander.getObjects().get(0);
+            theCmd.execute();
+            break;
+          default:
+            System.out.println("Unrecognized command.");
+            System.out.println("Use the 'help' command to dipslay usage");
+            System.exit(1);
         }
       } catch (ParameterException ex) {
         String attemptedCommand = cmd.getParsedCommand();

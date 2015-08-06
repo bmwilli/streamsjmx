@@ -1,4 +1,4 @@
-package bmwilli.streamsjmx.commandlineargs;
+package bmwilli.streamsjmx;
 
 import com.beust.jcommander.Parameter;
 

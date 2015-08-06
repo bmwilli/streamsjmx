@@ -12,12 +12,11 @@ import com.ibm.streams.management.ObjectNameBuilder;
 
 import bmwilli.streamsjmx.commandlineargs.GetDomainStateArgs;
 
-@Parameters(commandDescription = "Returns status of domain and its resources")
-public class GetDomainState extends BaseDomainCmd {
+@Parameters(commandDescription = "Returns status of an instance and its resources")
+public class GetResourceState extends BaseInstanceCmd {
 
-  public GetDomainState() {
+  public GetResourceState() {
     super();
-    //cmdArgs = commandArgs;
   }
 
   @Override
@@ -28,8 +27,8 @@ public class GetDomainState extends BaseDomainCmd {
       super.execute();
 
       // Execute and output Results (should be separated)
-      System.out.println("Status: " + getDomainMXBean().getStatus());
-      System.out.println("Instances: " + getDomainMXBean().getInstances());
+      System.out.println("Status: " + getInstanceMXBean().getStatus());
+      System.out.println("Resources: " + getInstanceMXBean().getResources());
 
     } catch (Exception e) {
      e.printStackTrace();     
