@@ -10,6 +10,11 @@
   <dependencies>
     <!-- addjars plugin below adds InfoSphere Streams JMX dependencies from Streams install location (required to build) -->
     <dependency>
+      <groupId>com.googlecode.json-simple</groupId>
+      <artifactId>json-simple</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
       <groupId>com.beust</groupId>
       <artifactId>jcommander</artifactId>
       <version>1.48</version>
