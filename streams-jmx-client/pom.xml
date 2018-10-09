@@ -51,7 +51,11 @@ under the License.
 	<artifactId>mx</artifactId>
 	<version>4</version>
 </dependency>
-
+    <dependency>
+      <groupId>org.glassfish.external</groupId>
+      <artifactId>opendmk_jmxremote_optional_jar</artifactId>
+      <version>1.0-b01-ea</version>
+    </dependency>
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
