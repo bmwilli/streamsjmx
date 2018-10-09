@@ -22,10 +22,10 @@ under the License.
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>streamsx.jmxclients</groupId>
 	<artifactId>streams-jmx-client</artifactId>
-	<version>1.1.0</version>
+	<version>0.1.0</version>
 	<packaging>jar</packaging>
 
-	<name>streams-metric-exporter</name>
+	<name>streams-jmx-client</name>
 	<url>https://github.com/IBMStreams/streamsx.jmxclients</url>
   <description>IBM Streams JMX Client Application.</description>
 	<properties>
@@ -34,18 +34,6 @@ under the License.
 		<streams.version>4.x</streams.version>
 	</properties>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.glassfish.jersey</groupId>
-				<artifactId>jersey-bom</artifactId>
-				<version>${jersey.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -53,22 +41,6 @@ under the License.
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
-<!--
-		<dependency>
-			<groupId>ibmstreams</groupId>
-			<artifactId>com.ibm.streams.management.jmxmp.jar</artifactId>
-			<version>4.x</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/com.ibm.streams.management.jmxmp.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>ibmstreams</groupId>
-			<artifactId>com.ibm.streams.management.mx.jar</artifactId>
-			<version>4.x</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/com.ibm.streams.management.mx.jar</systemPath>
-		</dependency>
--->
 <dependency>
 	<groupId>com.ibm.streams.management</groupId>
 	<artifactId>jmxmp</artifactId>
@@ -79,21 +51,6 @@ under the License.
 	<artifactId>mx</artifactId>
 	<version>4</version>
 </dependency>
-<!--
-		<dependency>
-			<groupId>test</groupId>
-			<artifactId>jmxremote_optional.jar</artifactId>
-			<version>4.x</version>
-			<scope>system</scope>
-			<systemPath>${STREAMS_INSTALL}/ext/lib/jmxremote_optional.jar</systemPath>
-		</dependency>
--->
-
-		<dependency>
-			<groupId>org.glassfish.external</groupId>
-			<artifactId>opendmk_jmxremote_optional_jar</artifactId>
-			<version>1.0-b01-ea</version>
-		</dependency>
 
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
@@ -111,48 +68,9 @@ under the License.
 			<version>1.7.21</version>
 		</dependency>
 		<dependency>
-			<groupId>org.glassfish.jersey.containers</groupId>
-			<artifactId>jersey-container-grizzly2-http</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.containers</groupId>
-			<artifactId>jersey-container-grizzly2-servlet</artifactId>
-		</dependency>
-		<dependency>
-      <groupId>org.glassfish.jersey.inject</groupId>
-      <artifactId>jersey-hk2</artifactId>
-    </dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-jackson</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.beust</groupId>
 			<artifactId>jcommander</artifactId>
 			<version>[1.71,)</version>
-		</dependency>
-		<dependency>
-		  <groupId>io.prometheus</groupId>
-		  <artifactId>simpleclient</artifactId>
-		  <version>0.0.26</version>
-		</dependency>
-		<!-- Hotspot JVM metrics-->
-		<dependency>
-		  <groupId>io.prometheus</groupId>
-		  <artifactId>simpleclient_hotspot</artifactId>
-		  <version>0.0.26</version>
-		</dependency>
-		<!-- Exposition servlet-->
-		<dependency>
-		  <groupId>io.prometheus</groupId>
-		  <artifactId>simpleclient_servlet</artifactId>
-		  <version>0.0.26</version>
-		</dependency>
-		<!-- Pushgateway exposition-->
-		<dependency>
-		  <groupId>io.prometheus</groupId>
-		  <artifactId>simpleclient_pushgateway</artifactId>
-		  <version>0.0.26</version>
 		</dependency>
 		<!-- <dependency> <groupId>com.fasterxml.jackson.jaxrs</groupId> <artifactId>jackson-jaxrs-xml-provider</artifactId>
 			<version>2.7.4</version> </dependency> -->

@@ -25,8 +25,8 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.internal.Console;
 import com.beust.jcommander.internal.DefaultConsole;
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.fasterxml.jackson.annotation.JsonGetter;
+//import com.fasterxml.jackson.annotation.JsonIgnore;
 
 //import streams.jmx.client.cli.ServerProtocolValidator;
 //import streams.jmx.client.cli.InstanceListConverter;
@@ -62,9 +62,9 @@ public class ServiceConfig {
     private String user = getEnvDefault(Constants.ENV_USERNAME,Constants.DEFAULT_USERNAME);
     
     @Parameter(names = {"--password"}, description = Constants.DESC_PASSWORD, required = false)
-    @JsonIgnore
+    //@JsonIgnore
     private String password = getEnvDefault(Constants.ENV_PASSWORD,Constants.DEFAULT_PASSWORD);
-    @JsonGetter("password")
+    //@JsonGetter("password")
     public String jsonPassword() { 
     		if (getPassword() != null && !getPassword().isEmpty()) {
     			return "(hidden)";
