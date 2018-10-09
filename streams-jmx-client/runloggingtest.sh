@@ -1,0 +1,1 @@
+java -Dlog4j.configuration=file:${PWD}/log4j.properties -jar target/executable-streams-metric-exporter.jar -j service:jmx:jmxmp://192.168.242.141:9975 -d StreamsDomain -i StreamsInstance -u streamsadmin -p 25500 -h 0.0.0.0 --password passw0rd -r 10

@@ -1,0 +1,37 @@
+# Use when Streams Domain is not on the same Docker Host
+# For example:
+#   Streams on bare-metal
+#   Streams on a VM
+#   Streams in Docker on another host
+#   Streams on Kubernetes (Kubernetes networking is different than Docker)
+
+version: '2'
+volumes:
+  prometheus_data:
+  grafana_data:
+services:
+  streamsexporter:
+    env_file:
+      - .env
+    build: 
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+     - 25500:25500
+    environment:
+      - STREAMS_DOMAIN_ID
+  prometheus:
+    image: "prom/prometheus:v2.1.0"
+    ports:
+     - 9090:9090
+    volumes:
+     - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+     - prometheus_data:/prometheus
+  grafana:
+    image: "grafana/grafana:5.0.4"
+    ports:
+     - 3000:3000
+    volumes:
+     - ../grafana:/etc/grafana
+     - ../dashboards:/streams/sample/dashboards:ro
+     - grafana_data:/var/lib/grafana

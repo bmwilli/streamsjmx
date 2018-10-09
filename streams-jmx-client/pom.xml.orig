@@ -20,12 +20,12 @@ under the License.
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>bmwilli.streamsjmx</groupId>
-	<artifactId>streamsjmx</artifactId>
-	<version>0.1</version>
+	<groupId>streamsx.jmxclients</groupId>
+	<artifactId>streams-metric-exporter</artifactId>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
-	<name>streamsjmx</name>
+	<name>streams-metric-exporter</name>
 	<url>https://github.com/IBMStreams/streamsx.jmxclients</url>
   <description>IBM Streams Metric Exporter with REST and PROMETHEUS enpoints.</description>
 	<properties>
@@ -53,32 +53,20 @@ under the License.
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
-<!--
 		<dependency>
 			<groupId>ibmstreams</groupId>
 			<artifactId>com.ibm.streams.management.jmxmp.jar</artifactId>
 			<version>4.x</version>
 			<scope>system</scope>
-			<systemPath>${basedir}/lib/com.ibm.streams.management.jmxmp.jar</systemPath>
+			<systemPath>${STREAMS_INSTALL}/lib/com.ibm.streams.management.jmxmp.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>ibmstreams</groupId>
 			<artifactId>com.ibm.streams.management.mx.jar</artifactId>
 			<version>4.x</version>
 			<scope>system</scope>
-			<systemPath>${basedir}/lib/com.ibm.streams.management.mx.jar</systemPath>
+			<systemPath>${STREAMS_INSTALL}/lib/com.ibm.streams.management.mx.jar</systemPath>
 		</dependency>
--->
-<dependency>
-	<groupId>com.ibm.streams.management</groupId>
-	<artifactId>jmxmp</artifactId>
-	<version>4</version>
-</dependency>
-<dependency>
-	<groupId>com.ibm.streams.management</groupId>
-	<artifactId>mx</artifactId>
-	<version>4</version>
-</dependency>
 <!--
 		<dependency>
 			<groupId>test</groupId>
@@ -222,7 +210,6 @@ under the License.
 								<!-- <include>jmxremote_optional.jar</include> -->
 								<!-- </includes> -->
 								<!-- </resource> -->
-<!--
 								<resource>
 									<directory>${STREAMS_INSTALL}/lib</directory>
 									<includes>
@@ -230,7 +217,6 @@ under the License.
 										<include>com.ibm.streams.management.mx.jar</include>
 									</includes>
 								</resource>
--->
 <!--
 								<resource>
 									<directory>${STREAMS_INSTALL}/ext/lib</directory>
@@ -280,7 +266,7 @@ under the License.
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<manifestEntries>
-										<Main-Class>bmwilli.streamsjmx.Client</Main-Class>
+										<Main-Class>streams.jmx.client.Launcher</Main-Class>
 										<Class-Path>.</Class-Path>
 										<Implementation-Version>${project.version}</Implementation-Version>
 										<Implementation-Title>${project.artifactId}</Implementation-Title>

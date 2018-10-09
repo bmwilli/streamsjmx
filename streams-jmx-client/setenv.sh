@@ -1,0 +1,4 @@
+export STREAMS_CLIENT_JMXCONNECT=service:jmx:jmxmp://localhost:9975
+export STREAMS_CLIENT_USERNAME=streamsadmin
+export STREAMS_CLIENT_PASSWORD=passw0rd
+export STREAMS_CLIENT_JMX_SSLOPTION=TLSv1.2

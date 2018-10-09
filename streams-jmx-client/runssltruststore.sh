@@ -1,0 +1,1 @@
+java -jar target/executable-streams-metric-exporter.jar -j service:jmx:jmxmp://192.168.242.167:9975 -d StreamsDomain -i StreamsInstance -u streamsadmin -r 0 -p 25500 -h 0.0.0.0 --password passw0rd --jmxssloption TLSv1.2 --jmxtruststore IBMTruststore

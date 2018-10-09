@@ -20,14 +20,14 @@ under the License.
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>bmwilli.streamsjmx</groupId>
-	<artifactId>streamsjmx</artifactId>
-	<version>0.1</version>
+	<groupId>streamsx.jmxclients</groupId>
+	<artifactId>streams-jmx-client</artifactId>
+	<version>1.1.0</version>
 	<packaging>jar</packaging>
 
-	<name>streamsjmx</name>
+	<name>streams-metric-exporter</name>
 	<url>https://github.com/IBMStreams/streamsx.jmxclients</url>
-  <description>IBM Streams Metric Exporter with REST and PROMETHEUS enpoints.</description>
+  <description>IBM Streams JMX Client Application.</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jersey.version>2.26</jersey.version>
@@ -129,7 +129,7 @@ under the License.
 		<dependency>
 			<groupId>com.beust</groupId>
 			<artifactId>jcommander</artifactId>
-			<version>[1.58,)</version>
+			<version>[1.71,)</version>
 		</dependency>
 		<dependency>
 		  <groupId>io.prometheus</groupId>
@@ -280,7 +280,7 @@ under the License.
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<manifestEntries>
-										<Main-Class>bmwilli.streamsjmx.Client</Main-Class>
+										<Main-Class>streams.jmx.client.Main</Main-Class>
 										<Class-Path>.</Class-Path>
 										<Implementation-Version>${project.version}</Implementation-Version>
 										<Implementation-Title>${project.artifactId}</Implementation-Title>

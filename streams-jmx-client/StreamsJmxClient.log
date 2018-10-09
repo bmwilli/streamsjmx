@@ -1,0 +1,3 @@
+2018-10-08 16:15:12,615 - INFO  [main:Main@183] - Streams JMX Client STARTING...
+2018-10-08 16:15:14,223 - INFO  [main:JmxConnectionPool$PooledJmxConnection@353] - *** JMX Connection Success
+2018-10-08 16:15:14,268 - ERROR [main:AbstractDomainCommand@68] - Domain 'xyz' not found.  Ensure the JMX URL specified is for the domain you are attempting to connect to.
