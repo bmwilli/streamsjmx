@@ -49,7 +49,7 @@ public class ServiceConfig {
     @Parameter(names = {"-v", "--version" }, description = Constants.DESC_VERSION, required = false)
     private boolean version;
 
-    @Parameter(names = { "-j", "--jmxurl" }, description = Constants.DESC_JMXCONNECT, required = false)
+    @Parameter(names = {"-j", "--jmxurl"}, description = Constants.DESC_JMXCONNECT, required = false)
     private String jmxUrl = getEnvDefault(Constants.ENV_JMXCONNECT,Constants.DEFAULT_JMXCONNECT);
 
     // @Parameter(names = { "-d", "--domain" }, description = Constants.DESC_DOMAIN_ID, required = false)

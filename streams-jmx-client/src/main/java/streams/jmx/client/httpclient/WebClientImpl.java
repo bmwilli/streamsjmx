@@ -14,21 +14,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+// NOTE: This is in the process of being redone from java.net.URL to use Apache Commons
+
 package streams.jmx.client.httpclient;
 
 import java.io.InputStreamReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 
 import java.net.URL;
-import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,64 +53,70 @@ public class WebClientImpl implements WebClient {
 
     private String sslProtocol;
     private TrustManager[] trustManagers;
+    private KeyStore ks;
 
-    public WebClientImpl(String sslProtocol, TrustManager[] tms) {
+    public WebClientImpl(String sslProtocol, TrustManager[] tms, KeyStore ks) {
         this.sslProtocol = sslProtocol;
         trustManagers = tms;
+        ks = ks;
     }
 
     public String get(String fromUri) throws WebClientException {
-        /******* HTTPS Interaction ********/
+
         try {
-            // set up trust manager
-            SSLContext ctxt = null;
-            try {
-                ctxt = SSLContext.getInstance(sslProtocol);
-                ctxt.init(null, trustManagers, null);
-            } catch (GeneralSecurityException e) {
-                LOG.error("HTTP retrieval initialization received Security Exception: "
-                        + e);
-                throw new WebClientException(
-                        "HTTP Security Exception", e);
-            }
-            // set up hostname verifier
-            HostnameVerifier hv = new HostnameVerifier() {
-                public boolean verify(String urlHostName, SSLSession session) {
-                    // return false to reject
-                    return true;
-                }
-            };
 
-            URL url = new URL(fromUri);
-            if (LOG.isTraceEnabled()) {
-                LOG.trace(String.format("Connecting to URL %s", fromUri));
-            }
+            SSLContextBuilder sslContextBuilder = SSLContextBuilder.create();
+            sslContextBuilder.loadTrustMaterial(ks, new TrustSelfSignedStrategy());
+            sslContextBuilder.setProtocol(this.sslProtocol);
+            SSLContext sslContext = sslContextBuilder.build();
+            SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, new NoopHostnameVerifier());
 
-            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            HttpClientBuilder httpClientBuilder = HttpClients.custom().setSSLSocketFactory(sslSocketFactory);
+            CloseableHttpClient httpClient = httpClientBuilder.build();
+            HttpGet httpget = new HttpGet(fromUri);  // throws IllegalArgumentException
 
             try {
-                conn.setSSLSocketFactory(ctxt.getSocketFactory());
-                conn.setHostnameVerifier(hv);
-                conn.setRequestMethod("GET");
-                conn.connect();
-                InputStreamReader reader = new InputStreamReader(conn.getInputStream());
 
-                try {
-                    return readFully(reader);
+                ResponseHandler<String> rh = new ResponseHandler<String>() {
+                    @Override
+                    public String handleResponse(final HttpResponse response) throws IOException {
+                        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                            throw new IOException(String.format("Unable to get information from Streams JMX HTTP Server URI: %s",
+                                fromUri));
+                        }
+                        HttpEntity entity = response.getEntity();
+                        //System.out.println(EntityUtils.toString(entity));
+                        InputStreamReader reader = new InputStreamReader(entity.getContent());
+
+                        try {
+                            return readFully(reader);
+                        }
+                        finally {
+                            reader.close();
+                        }
+                    }
+                };
+
+                return httpClient.execute(httpget, rh);
+
+            } catch (Exception e) {
+                if (LOG.isDebugEnabled()) {
+                    e.printStackTrace();
                 }
-                finally {
-                    reader.close();
-                }
+                throw new WebClientException(e);
+            } finally {
+                httpget.releaseConnection();
             }
-            finally {
-                conn.disconnect();
+
+        } catch (Exception e) {
+            if (LOG.isDebugEnabled()) {
+                e.printStackTrace();
             }
-        }
-        catch (IOException e) {
-            throw new WebClientException(String.format("Failed GET request to uri %s", fromUri), e);
+            throw new WebClientException(e);
         }
     }
-    
+
+
     public String get(String fromUri, String host, String port) throws WebClientException{
     		String newUri = fromUri;
     		// If either host or port need to be overridden
@@ -142,4 +164,86 @@ public class WebClientImpl implements WebClient {
 
         return sb.toString(); 
     }
+
+    @Override
+    public void putFile(String toUri, String contentType, File file) throws WebClientException {
+
+        try {
+
+            SSLContextBuilder sslContextBuilder = SSLContextBuilder.create();
+            sslContextBuilder.loadTrustMaterial(ks, new TrustSelfSignedStrategy());
+            sslContextBuilder.setProtocol(this.sslProtocol);
+            SSLContext sslContext = sslContextBuilder.build();
+            SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, new NoopHostnameVerifier());
+
+            HttpClientBuilder httpClientBuilder = HttpClients.custom().setSSLSocketFactory(sslSocketFactory);
+            CloseableHttpClient httpClient = httpClientBuilder.build();
+            //CloseableHttpClient httpClient = HttpClients.createDefault();
+            HttpPut putFile = new HttpPut(toUri);  // throws IllegalArgumentException
+
+            try {
+
+                putFile.setEntity(new FileEntity(file,ContentType.create(contentType)));
+
+                ResponseHandler<HttpResponse> rh = new ResponseHandler<HttpResponse>() {
+                    @Override
+                    public HttpResponse handleResponse(final HttpResponse response) throws IOException {
+                        return response;
+                    }
+                };
+
+                HttpResponse response = httpClient.execute(putFile, rh);
+
+                if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                    throw new WebClientException(String.format("Unable to send file (%s) to Streams JMX HTTP Server URI: %s",
+                        file.getName(), toUri));
+                }
+
+            } catch (Exception e) {
+                throw new WebClientException(e);
+            } finally {
+                putFile.releaseConnection();
+            }
+
+        } catch (Exception e) {
+            throw new WebClientException(e);
+        }
+    }
+
+
+    public void putFile(String toUri, String contentType, File file, String host, String port) throws WebClientException{
+        String newUri = toUri;
+        // If either host or port need to be overridden
+        boolean hostOverride = false;
+        boolean portOverride = false;
+        if ((host != null) && (!host.isEmpty())) {
+            hostOverride = true;
+        }
+        if ((port != null) && (!port.isEmpty())) {
+            portOverride = true;
+        }
+        if ((hostOverride) || (portOverride)) {
+            LOG.debug("httpClient.putFile called to replace host and/or port of uri({}) with host: {}, port: {}",toUri,host,port);
+            try {
+                URL url = new URL(toUri);
+                String theHost = url.getHost();
+                int thePort = url.getPort();
+                
+                if (hostOverride) {
+                        theHost = host;
+                }
+                if (portOverride) {
+                        thePort = Integer.parseInt(port);
+                }
+                
+                URL newUrl = new URL(url.getProtocol(),theHost,thePort,url.getFile());
+                newUri = newUrl.toString();
+                LOG.debug("httpClient.putFile new uri: {}",newUri);
+            } catch (IOException e) {
+                throw new WebClientException(String.format("Failed URI host(%s)/port(%s) replacement to uri %s", host, port, toUri), e);
+            }
+        }
+        putFile(newUri, contentType, file);
+}
+
 }

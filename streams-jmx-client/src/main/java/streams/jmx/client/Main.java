@@ -46,11 +46,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import streams.jmx.client.commands.AbstractJmxCommand;
+import streams.jmx.client.commands.CancelJob;
 import streams.jmx.client.commands.Command;
 import streams.jmx.client.commands.CommandResult;
 import streams.jmx.client.commands.GetDomainState;
 import streams.jmx.client.commands.GetInstanceState;
+import streams.jmx.client.commands.SubmitJob;
 import streams.jmx.client.commands.Help;
+import streams.jmx.client.commands.SnapshotJobs;
 import streams.jmx.client.commands.Version;
 import streams.jmx.client.httpclient.WebClient;
 import streams.jmx.client.httpclient.WebClientImpl;
@@ -95,6 +98,9 @@ public class Main {
 		// cm.put(Constants.CMD_VERSION, new Version());
 		cm.put(Constants.CMD_GETDOMAINSTATE, new GetDomainState());
 		cm.put(Constants.CMD_GETINSTANCESTATE, new GetInstanceState());
+		cm.put(Constants.CMD_SUBMITJOB, new SubmitJob());
+		cm.put(Constants.CMD_CANCELJOB, new CancelJob());
+		cm.put(Constants.CMD_SNAPSHOTJOBS, new SnapshotJobs());
 
 		commandMap = cm;
 	}
@@ -267,6 +273,7 @@ public class Main {
 				.addCommand(Constants.CMD_HELP, new Help())
 				.addCommand(Constants.CMD_VERSION, new Version())
 				.addCommand(Constants.CMD_QUIT, quitCommand)
+				.allowParameterOverwriting(true)
 				.build();
 			
 			for (Map.Entry<String, Command> entry : commandMap.entrySet()) {
@@ -338,12 +345,13 @@ public class Main {
 		config.getPassword(), config.getSslOption(), retryInitialConnection);
 
 		TrustManager[] trustManagers = null;
+		KeyStore ks = null;
 
 		if (config.getTruststore() == null) {
 			trustManagers = new TrustManager[] { new JmxTrustManager() };
 		} else {
 			try {
-				KeyStore ks = KeyStore.getInstance("JKS");
+				ks = KeyStore.getInstance("JKS");
 
 				try {
 					FileInputStream fis = new FileInputStream(config.getTruststore());
@@ -379,7 +387,9 @@ public class Main {
 			}
 		}
 
-		webClient = new WebClientImpl(config.getSslOption(), trustManagers);
+		// In the process of moving between approaches to https connections
+		// Sending trustManagers for old one and ks for new apache httpclient apporach
+		webClient = new WebClientImpl(config.getSslOption(), trustManagers, ks);
 
 		this.jmxContext = new JmxServiceContext() {
 			public MXBeanSourceProvider getBeanSourceProvider() {
@@ -473,6 +483,13 @@ public class Main {
 			logger.addAppender(consoleAppender);
 		}		
 		
+		// Turning down apache httpclient logging
+		// Default is DEBUG logging for wire is too verbose
+		if (!logger.isTraceEnabled()) {
+			logger.getLogger("org.apache.http.wire").setLevel(org.apache.log4j.Level.toLevel("INFO"));
+		}
+		//logger.getLogger("org.apache.http.http").setLevel(org.apache.log4j.Level.toLevel(loglevel));
+
 		// Turn off built in grizzly logging that uses JUL, and route to our SLF4J via
 		// log4j implementation
 		// SLF4JBridgeHandler.removeHandlersForRootLogger();

@@ -16,6 +16,8 @@
 
 package streams.jmx.client.httpclient;
 
+import java.io.File;
+
 /**
  * Abstracts HTTP operations to make unit testing easier.
  */
@@ -37,4 +39,10 @@ public interface WebClient {
      * @throws WebClientException
      */
     String get(String fromUri, String host, String port) throws WebClientException;
+
+    void putFile(String toUri, String contentType, File file) throws WebClientException;
+
+    // putFile version with override of host and/or port available
+    void putFile(String toUri, String contentType, File file, String host, String port) throws WebClientException;
+
 }

@@ -29,14 +29,19 @@ import java.util.Set;
 import javax.management.ObjectName;
 import com.ibm.streams.management.ObjectNameBuilder;
 import com.ibm.streams.management.domain.DomainMXBean;
+import com.ibm.streams.management.instance.InstanceMXBean;
 import com.ibm.streams.management.instance.InstanceServiceMXBean;
 import com.ibm.streams.management.resource.ResourceMXBean;
 
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.json.simple.JSONArray;
 
 @Parameters(commandDescription = Constants.DESC_GETDOMAINSTATE)
 public class GetInstanceState extends AbstractInstanceCommand {
+    private static final Logger LOGGER = LoggerFactory.getLogger("root."
+            + GetInstanceState.class.getName());
 
     public GetInstanceState() {
     }
@@ -54,7 +59,7 @@ public class GetInstanceState extends AbstractInstanceCommand {
 
             StringBuilder sb = new StringBuilder();
 
-            DomainMXBean instance = getDomainMXBean();
+            InstanceMXBean instance = getInstanceMXBean();
 
             // Populate the result object
             jsonOut.put("instance",instance.getName());
@@ -65,10 +70,12 @@ public class GetInstanceState extends AbstractInstanceCommand {
             JSONArray resourceArray = new JSONArray();
             sb.append(String.format("%-11s %-7s\n","Resource","Status"));
             for (String resourceId : instance.getResources()) {
+                LOGGER.trace("Lookup up resource bean for resource: {} of instance: {}", resourceId, instance.getName());
+
                 //get resource
                 //ObjectName objName = ObjectNameBuilder.resource(domain.getName(),s);
                 //ResourceMXBean resourceBean = JMX.newMXBeanProxy(getMBeanServerConnection(), objName, ResourceMXBean.class, true);
-                    ResourceMXBean resourceBean = getBeanSource().getResourceBean(instance.getName(), resourceId);
+                    ResourceMXBean resourceBean = getBeanSource().getResourceBean(instance.getDomain(), resourceId);
                 //json
                 JSONObject resourceObject = new JSONObject();
                 resourceObject.put("resource",resourceId);
