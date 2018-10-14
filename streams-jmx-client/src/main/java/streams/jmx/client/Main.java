@@ -45,6 +45,8 @@ import org.apache.log4j.RollingFileAppender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jline.TerminalFactory;
+import jline.console.ConsoleReader;
 import streams.jmx.client.commands.AbstractJmxCommand;
 import streams.jmx.client.commands.CancelJob;
 import streams.jmx.client.commands.Command;
@@ -53,6 +55,7 @@ import streams.jmx.client.commands.GetDomainState;
 import streams.jmx.client.commands.GetInstanceState;
 import streams.jmx.client.commands.SubmitJob;
 import streams.jmx.client.commands.Help;
+import streams.jmx.client.commands.Quit;
 import streams.jmx.client.commands.SnapshotJobs;
 import streams.jmx.client.commands.Version;
 import streams.jmx.client.httpclient.WebClient;
@@ -257,22 +260,14 @@ public class Main {
 		JCommander jc = null;
 		String parsedCommand = null;
 		
-		//try {
-			// jc = new JCommander(config);
-			// jc.setProgramName(Constants.PROGRAM_NAME);
-			// jc.setColumnSize(132);
-			// jc.addCommand(Constants.CMD_HELP, new Help());
-			// jc.addCommand(Constants.CMD_VERSION, new Version());
-			// jc.addCommand(Constants.CMD_GETDOMAINSTATE, new GetDomainState());
-		
-			Quit quitCommand = new Quit(this);
+		try {
 
 			jc = JCommander.newBuilder()
 				.programName(Constants.PROGRAM_NAME)
 				.columnSize(132)
 				.addCommand(Constants.CMD_HELP, new Help())
 				.addCommand(Constants.CMD_VERSION, new Version())
-				.addCommand(Constants.CMD_QUIT, quitCommand)
+				.addCommand(Constants.CMD_QUIT, new Quit())
 				.allowParameterOverwriting(true)
 				.build();
 			
@@ -282,10 +277,22 @@ public class Main {
 
 			String command_prompt = Constants.INTERACTIVE_PREFIX + Constants.INTERACTIVE_SUFFIX;
 
-			while (true) {
-	
-				System.out.print(command_prompt);
-				String line = System.console().readLine();
+			// Jline stuff
+			ConsoleReader console = new ConsoleReader();
+			console.setPrompt(command_prompt);
+			String line = null;
+			boolean timeToQuit = false;
+
+			while (!timeToQuit) {
+				parsedCommand = null;
+				line = null;
+
+				line = console.readLine();
+				if (line == null || line.isEmpty()){
+					LOGGER.trace("Empty command line");
+					continue;
+				} 
+
 				String[] clArgs = parseCommndLine(line);
 	
 				LOGGER.debug("interactive clArgs: " + Arrays.toString(clArgs));
@@ -293,7 +300,7 @@ public class Main {
 				try {
 					LOGGER.debug("Interactive: About to parse args...");
 					jc.parse(clArgs);
-					LOGGER.debug("Interactive: About to getParsedCommand...");
+					LOGGER.debug("Interactive: About to getParsedCommand, currently = " + parsedCommand);
 					parsedCommand = jc.getParsedCommand();
 					if (parsedCommand == null) {
 						parsedCommand = "";
@@ -306,7 +313,7 @@ public class Main {
 					} else if (parsedCommand.equals(Constants.CMD_VERSION)) {
 						printVersion();
 					} else if (parsedCommand.equals(Constants.CMD_QUIT)) {
-						quitCommand.execute();
+						timeToQuit = true;
 					} else if (commandMap.containsKey(parsedCommand)) {
 						Command matchedCommand = commandMap.get(parsedCommand);
 						CommandResult result = matchedCommand.execute();
@@ -332,8 +339,19 @@ public class Main {
 
 
 			}
+			console.close();
 
-		//}
+		} catch(IOException e) {
+			System.out.println("Interactive Mode Exception: " + e.getLocalizedMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+				TerminalFactory.get().restore();
+            } catch(Exception e) {
+				System.out.println("TerminalFactory restore failed");
+                e.printStackTrace();
+            }
+        }
 
 
 	}
@@ -509,33 +527,5 @@ public class Main {
 		Main main = new Main();
 		main.processCommandLine(args);
 
-	}
-
-	@Parameters(commandDescription = Constants.DESC_QUIT)
-	private static class Quit implements Command{
-		private Main main;
-
-		public Quit(Main main) {
-			this.main = main;
-		}
-
-		@Override
-		public String getName() {
-			return Constants.CMD_QUIT;
-		}
-
-		@Override
-		public String getHelp() {
-			return "";
-		}
-
-		@Override
-		public CommandResult execute() {
-			main.close();
-
-			System.exit(0);
-
-			return null;
-		}
 	}
 }
