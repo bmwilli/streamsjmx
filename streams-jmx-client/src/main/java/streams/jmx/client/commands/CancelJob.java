@@ -39,8 +39,9 @@ import com.ibm.streams.management.instance.InstanceServiceMXBean;
 import com.ibm.streams.management.job.DeployInformation;
 import com.ibm.streams.management.resource.ResourceMXBean;
 
-import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Parameters(commandDescription = Constants.DESC_CANCELJOB)
 public class CancelJob extends AbstractInstanceCommand {
@@ -66,13 +67,15 @@ public class CancelJob extends AbstractInstanceCommand {
 
             BigInteger jobId = new BigInteger(jobIdString);
 
-            JSONObject jsonOut = new JSONObject();
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode jsonOut = mapper.createObjectNode();
+            
             //StringBuilder sb = new StringBuilder();
             InstanceMXBean instance = getInstanceMXBean();
     
             instance.cancelJob(jobId, forceCancel);
 
-            jsonOut.put("jobId", jobId);
+            jsonOut.put("jobId", jobId.longValue());
 
             return new CommandResult(jsonOut.toString());
         } catch (Exception e) {

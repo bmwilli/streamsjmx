@@ -28,8 +28,9 @@ import com.ibm.streams.management.ObjectNameBuilder;
 import com.ibm.streams.management.domain.DomainMXBean;
 import com.ibm.streams.management.resource.ResourceMXBean;
 
-import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Parameters(commandDescription = Constants.DESC_GETDOMAINSTATE)
 public class GetDomainState extends AbstractInstanceCommand {
@@ -46,32 +47,27 @@ public class GetDomainState extends AbstractInstanceCommand {
     @Override
     protected CommandResult doExecute() {
         try {
-            JSONObject jsonOut = new JSONObject();
-
-            StringBuilder sb = new StringBuilder();
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode jsonOut = mapper.createObjectNode();
 
             DomainMXBean domain = getDomainMXBean();
 
             // Populate the result object
             jsonOut.put("domain",domain.getName());
-            jsonOut.put("state",domain.getStatus());
-            sb.append(String.format("domain: %s State: %s\n",domain.getName(),domain.getStatus()));
+            jsonOut.put("status",domain.getStatus().toString());
     
-    
-            JSONArray resourceArray = new JSONArray();
-            sb.append(String.format("%-11s %-7s\n","Resource","Status"));
+            ArrayNode resourceArray = mapper.createArrayNode();
+
             for (String resourceId : domain.getResources()) {
             //get resource
             //ObjectName objName = ObjectNameBuilder.resource(domain.getName(),s);
             //ResourceMXBean resourceBean = JMX.newMXBeanProxy(getMBeanServerConnection(), objName, ResourceMXBean.class, true);
                 ResourceMXBean resourceBean = getBeanSource().getResourceBean(domain.getName(), resourceId);
             //json
-            JSONObject resourceObject = new JSONObject();
+            ObjectNode resourceObject = mapper.createObjectNode();
             resourceObject.put("resource",resourceId);
-            resourceObject.put("status",resourceBean.getStatus());
+            resourceObject.put("status",resourceBean.getStatus().toString());
             resourceArray.add(resourceObject);
-            //string
-            sb.append(String.format("%-11s %-7s\n", resourceId, resourceBean.getStatus()));
             }
             jsonOut.put("resources",resourceArray);
 

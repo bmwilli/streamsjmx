@@ -38,8 +38,9 @@ import com.ibm.streams.management.instance.InstanceServiceMXBean;
 import com.ibm.streams.management.job.DeployInformation;
 import com.ibm.streams.management.resource.ResourceMXBean;
 
-import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Parameters(commandDescription = Constants.DESC_SUBMITJOB)
 public class SubmitJob extends AbstractInstanceCommand {
@@ -62,16 +63,16 @@ public class SubmitJob extends AbstractInstanceCommand {
     @Override
     protected CommandResult doExecute() {
         try {
-            JSONObject jsonOut = new JSONObject();
-            //StringBuilder sb = new StringBuilder();
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode jsonOut = mapper.createObjectNode();
+            
             InstanceMXBean instance = getInstanceMXBean();
     
             DeployInformation deployInformation = instance.deployApplication(sabFile.getName());
 
             getJmxServiceContext().getWebClient().putFile(deployInformation.getUri(),
                 "application/x-jar", sabFile, getConfig().getJmxHttpHost(), getConfig().getJmxHttpPort());
-
-            jsonOut.put("jobId", instance.submitJob(deployInformation.getApplicationId()));
+            jsonOut.put("jobId", instance.submitJob(deployInformation.getApplicationId()).longValue());
 
             return new CommandResult(jsonOut.toString());
         } catch (Exception e) {

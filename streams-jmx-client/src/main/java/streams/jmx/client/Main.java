@@ -38,6 +38,7 @@ import javax.net.ssl.TrustManagerFactory;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.PatternLayout;
@@ -319,7 +320,11 @@ public class Main {
 						CommandResult result = matchedCommand.execute();
 						if (result != null) {
 							if (result.getOutput() != null) {
-								System.out.println(result.getOutput());
+								ObjectMapper mapper = new ObjectMapper();
+								Object json = mapper.readValue(result.getOutput(), Object.class);
+								
+								String indented = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
+								System.out.println(indented);
 							}
 							if (!result.getExitStatus().isSuccess()) {
 								System.out.println("ERROR: " + result.getErrorMessage());
@@ -335,6 +340,8 @@ public class Main {
 					System.out.println("Use --help or the help command to get command line usage");
 					//jc.usage();
 					//System.exit(1);
+				} catch (Exception e) {
+					System.out.println("Caught unexpected exception in command loop: " + e.getLocalizedMessage());
 				}
 
 

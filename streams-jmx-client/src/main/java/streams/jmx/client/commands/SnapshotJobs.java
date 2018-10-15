@@ -41,9 +41,6 @@ import com.ibm.streams.management.instance.InstanceServiceMXBean;
 import com.ibm.streams.management.job.DeployInformation;
 import com.ibm.streams.management.resource.ResourceMXBean;
 
-import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
-
 @Parameters(commandDescription = Constants.DESC_SUBMITJOB)
 public class SnapshotJobs extends AbstractInstanceCommand {
 

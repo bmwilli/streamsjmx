@@ -33,10 +33,12 @@ import com.ibm.streams.management.instance.InstanceMXBean;
 import com.ibm.streams.management.instance.InstanceServiceMXBean;
 import com.ibm.streams.management.resource.ResourceMXBean;
 
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.json.simple.JSONArray;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Parameters(commandDescription = Constants.DESC_GETDOMAINSTATE)
 public class GetInstanceState extends AbstractInstanceCommand {
@@ -55,20 +57,17 @@ public class GetInstanceState extends AbstractInstanceCommand {
     @Override
     protected CommandResult doExecute() {
         try {
-            JSONObject jsonOut = new JSONObject();
-
-            StringBuilder sb = new StringBuilder();
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode jsonOut = mapper.createObjectNode();
 
             InstanceMXBean instance = getInstanceMXBean();
 
             // Populate the result object
             jsonOut.put("instance",instance.getName());
-            jsonOut.put("state",instance.getStatus());
-            sb.append(String.format("instance: %s State: %s\n",instance.getName(),instance.getStatus()));
+            jsonOut.put("state",instance.getStatus().toString());    
     
-    
-            JSONArray resourceArray = new JSONArray();
-            sb.append(String.format("%-11s %-7s\n","Resource","Status"));
+            ArrayNode resourceArray = mapper.createArrayNode();
+
             for (String resourceId : instance.getResources()) {
                 LOGGER.trace("Lookup up resource bean for resource: {} of instance: {}", resourceId, instance.getName());
 
@@ -77,46 +76,24 @@ public class GetInstanceState extends AbstractInstanceCommand {
                 //ResourceMXBean resourceBean = JMX.newMXBeanProxy(getMBeanServerConnection(), objName, ResourceMXBean.class, true);
                     ResourceMXBean resourceBean = getBeanSource().getResourceBean(instance.getDomain(), resourceId);
                 //json
-                JSONObject resourceObject = new JSONObject();
+                ObjectNode resourceObject = mapper.createObjectNode();
                 resourceObject.put("resource",resourceId);
-                resourceObject.put("status",resourceBean.getStatus());
+                resourceObject.put("status",resourceBean.getStatus().toString());
                 resourceObject.put("schedulerStatus",resourceBean.getSchedulerStatus(getInstanceName()).toString());
 
                 // Instance Services
                 List<InstanceServiceMXBean.Type> instanceServices = resourceBean.retrieveInstanceServices(getInstanceName());
-                resourceObject.put("services",instanceServices);
+                ArrayNode serviceArray = mapper.valueToTree(instanceServices);
+            
+                resourceObject.put("services",serviceArray);
 
-                // Text Format
-                StringBuilder serviceList = new StringBuilder();
-                boolean needscomma = false;
-                for (InstanceServiceMXBean.Type s : instanceServices) {
-                    if (needscomma) {
-                        serviceList.append(",");
-                    } else {
-                        needscomma = true;
-                    }
-                    serviceList.append(s.toString());
-                }
 
                 // Resource Tags
                 Set<String> resourceTags = resourceBean.getTags();
-                resourceObject.put("tags",resourceTags);
-
-                // Text Format
-                StringBuilder tagList = new StringBuilder();
-                needscomma = false;
-                for (String tag : resourceTags) {
-                    if (needscomma) {
-                        tagList.append(",");
-                    } else {
-                        needscomma = true;
-                    }
-                    tagList.append(tag);
-                }
+                ArrayNode tagArray = mapper.valueToTree(resourceTags);
+                resourceObject.put("tags",tagArray);
 
                 resourceArray.add(resourceObject);
-                //string
-                sb.append(String.format("%-11s %-7s %-20s %-20s\n", resourceId, resourceBean.getStatus(), serviceList.toString(), tagList.toString()));
             }
             jsonOut.put("resources",resourceArray);
             //System.out.println(sb.toString());
