@@ -20,6 +20,28 @@ import com.beust.jcommander.Parameters;
 import com.beust.jcommander.Parameter;
 
 @Parameters(commandDescription = Constants.DESC_HELP)
-public class Help {
+public class Help implements Command {
+    @Parameter(description = "Command to get help information for", required=false)
+    private String helpCommand = "";
+
+    public String getName() {
+        return Constants.CMD_HELP;
+    }
+
+    public String getHelp() {
+            return Constants.DESC_HELP;
+    }
+
+    public CommandResult execute() {
+            return new CommandResult("This should have been handled before execution");
+    }
+
+    public String getHelpCommand() {
+        return this.helpCommand;
+    }
+
+    public void clearHelpCommand() {
+        this.helpCommand = null;
+    }
 
 }

@@ -20,6 +20,17 @@ import com.beust.jcommander.Parameters;
 import com.beust.jcommander.Parameter;
 
 @Parameters(commandDescription = Constants.DESC_QUIT)
-public class Quit {
+public class Quit implements Command {
 
+    public String getName() {
+        return Constants.CMD_QUIT;
+    }
+
+    public String getHelp() {
+            return Constants.DESC_QUIT;
+    }
+
+    public CommandResult execute() {
+            return new CommandResult("This should have been captured before execution");
+    }
 }

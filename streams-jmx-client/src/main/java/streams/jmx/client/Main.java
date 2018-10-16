@@ -257,24 +257,25 @@ public class Main {
 			LOGGER.info("Streams JMX Client INTERACTIVE MODE STARTED");
 		}
 
-
 		JCommander jc = null;
 		String parsedCommand = null;
 		
 		try {
 
-			jc = JCommander.newBuilder()
-				.programName(Constants.PROGRAM_NAME)
-				.columnSize(132)
-				.addCommand(Constants.CMD_HELP, new Help())
-				.addCommand(Constants.CMD_VERSION, new Version())
-				.addCommand(Constants.CMD_QUIT, new Quit())
-				.allowParameterOverwriting(true)
-				.build();
+			Help helpCommand = new Help();
+
+			// jc = JCommander.newBuilder()
+			// 	.programName(Constants.PROGRAM_NAME)
+			// 	.columnSize(132)
+			// 	.addCommand(Constants.CMD_HELP, helpCommand)
+			// 	.addCommand(Constants.CMD_VERSION, new Version())
+			// 	.addCommand(Constants.CMD_QUIT, new Quit())
+			// 	.allowParameterOverwriting(true)
+			// 	.build();
 			
-			for (Map.Entry<String, Command> entry : commandMap.entrySet()) {
-				jc.addCommand(entry.getKey(),entry.getValue());
-			}
+			// for (Map.Entry<String, Command> entry : commandMap.entrySet()) {
+			// 	jc.addCommand(entry.getKey(),entry.getValue());
+			// }
 
 			String command_prompt = Constants.INTERACTIVE_PREFIX + Constants.INTERACTIVE_SUFFIX;
 
@@ -285,6 +286,21 @@ public class Main {
 			boolean timeToQuit = false;
 
 			while (!timeToQuit) {
+				// Create new jcommander each time.  Without this we received
+				// odd issues.
+				jc = JCommander.newBuilder()
+					.programName(Constants.PROGRAM_NAME)
+					.columnSize(132)
+					.addCommand(Constants.CMD_HELP, helpCommand)
+					.addCommand(Constants.CMD_VERSION, new Version())
+					.addCommand(Constants.CMD_QUIT, new Quit())
+					.allowParameterOverwriting(true)
+					.build();
+				
+				for (Map.Entry<String, Command> entry : commandMap.entrySet()) {
+					jc.addCommand(entry.getKey(),entry.getValue());
+				}
+				
 				parsedCommand = null;
 				line = null;
 
@@ -310,7 +326,18 @@ public class Main {
 
 
 					if (parsedCommand.equals(Constants.CMD_HELP)) {
-						jc.usage();
+						String commandHelp = helpCommand.getHelpCommand();
+						helpCommand.clearHelpCommand();
+						if (commandHelp != null && !commandHelp.equals("")) {
+							jc.usage(commandHelp);
+						} else {
+							System.out.println(String.format("%-20s  %s","Command","Description"));
+							System.out.println(String.format("%-20s  %s\n","--------------------","-----------"));
+							for (Map.Entry<String, JCommander> entry :  jc.getCommands().entrySet()) {
+								Command commandObject = (Command)entry.getValue().getObjects().get(0);
+								System.out.println(String.format("%-20s  %s\n",entry.getKey(),commandObject.getHelp()));
+							}
+						}
 					} else if (parsedCommand.equals(Constants.CMD_VERSION)) {
 						printVersion();
 					} else if (parsedCommand.equals(Constants.CMD_QUIT)) {
@@ -341,6 +368,7 @@ public class Main {
 					//jc.usage();
 					//System.exit(1);
 				} catch (Exception e) {
+					e.printStackTrace();
 					System.out.println("Caught unexpected exception in command loop: " + e.getLocalizedMessage());
 				}
 

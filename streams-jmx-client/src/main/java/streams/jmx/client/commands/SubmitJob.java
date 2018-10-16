@@ -59,6 +59,11 @@ public class SubmitJob extends AbstractInstanceCommand {
         return (Constants.CMD_SUBMITJOB);
     }
 
+    @Override
+    public String getHelp() {
+        return (Constants.DESC_SUBMITJOB);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     protected CommandResult doExecute() {

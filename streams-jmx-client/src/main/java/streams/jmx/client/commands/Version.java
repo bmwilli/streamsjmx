@@ -4,9 +4,19 @@ import com.beust.jcommander.Parameters;
 import streams.jmx.client.Constants;
 
 @Parameters(commandDescription = Constants.DESC_VERSION)
-public class Version {
+public class Version implements Command {
 
+        public String getName() {
+                return Constants.CMD_VERSION;
+        }
 
+        public String getHelp() {
+                return Constants.DESC_VERSION;
+        }
+
+        public CommandResult execute() {
+                return new CommandResult(Version.getTitleAndVersionString());
+        }
 
         // Get value of Implementation-Title and Version from jar MANIFEST.mf file
         // This needs to be in the outer-most jar file

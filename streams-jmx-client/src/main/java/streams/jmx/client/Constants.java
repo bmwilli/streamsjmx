@@ -44,7 +44,7 @@ public class Constants {
 		DESC_SUBMITJOB = "Submit Streams application to run in a Streams instance",
 		DESC_CANCELJOB = "Cancel Streams application",
 		DESC_SNAPSHOTJOBS = "Capture a snapshot of all jobs in the Streams instance",
-		DESC_QUIT = "Exit client application"
+		DESC_QUIT = "Exit interactive client application"
 	;
 
 	/* Environment Variables */
@@ -100,7 +100,7 @@ public class Constants {
 	
 	/* Program Argment Descriptions */
 	public static final String
-		DESC_HELP = "Display command line arguments",
+		DESC_HELP = "Display commands or specific commands arguments",
 		DESC_VERSION = "Display version information",
 		DESC_JMXCONNECT = "JMX Connection URL (e.g. service:jmx:jmxmp://localhost:9975)\n      Environment Variable: " + ENV_JMXCONNECT,
 		DESC_DOMAIN_ID = "Streams domain name\n      Environment Variable: " + ENV_DOMAIN_ID,

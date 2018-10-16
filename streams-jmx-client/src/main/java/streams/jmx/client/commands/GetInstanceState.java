@@ -53,6 +53,11 @@ public class GetInstanceState extends AbstractInstanceCommand {
         return (Constants.CMD_GETINSTANCESTATE);
     }
 
+    @Override
+    public String getHelp() {
+        return (Constants.DESC_GETINSTANCESTATE);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     protected CommandResult doExecute() {

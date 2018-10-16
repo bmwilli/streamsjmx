@@ -43,6 +43,11 @@ public class GetDomainState extends AbstractInstanceCommand {
         return (Constants.CMD_GETDOMAINSTATE);
     }
 
+    @Override
+    public String getHelp() {
+        return (Constants.DESC_GETDOMAINSTATE);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     protected CommandResult doExecute() {

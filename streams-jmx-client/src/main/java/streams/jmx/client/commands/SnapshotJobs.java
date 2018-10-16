@@ -62,6 +62,11 @@ public class SnapshotJobs extends AbstractInstanceCommand {
         return (Constants.CMD_SNAPSHOTJOBS);
     }
 
+    @Override
+    public String getHelp() {
+        return (Constants.DESC_SNAPSHOTJOBS);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     protected CommandResult doExecute() {

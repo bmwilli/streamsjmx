@@ -60,6 +60,11 @@ public class CancelJob extends AbstractInstanceCommand {
         return (Constants.CMD_CANCELJOB);
     }
 
+    @Override
+    public String getHelp() {
+        return (Constants.DESC_CANCELJOB);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     protected CommandResult doExecute() {
