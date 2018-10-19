@@ -87,20 +87,30 @@ public class GetInstanceState extends AbstractInstanceCommand {
                 resourceObject.put("schedulerStatus",resourceBean.getSchedulerStatus(getInstanceName()).toString());
 
                 // Instance Services
-                List<InstanceServiceMXBean.Type> instanceServices = resourceBean.retrieveInstanceServices(getInstanceName());
-                ArrayNode serviceArray = mapper.valueToTree(instanceServices);
+                //List<InstanceServiceMXBean.Type> instanceServices = resourceBean.retrieveInstanceServices(getInstanceName());
+                //ArrayNode serviceArray = mapper.valueToTree(instanceServices);
+
+
+                ArrayNode serviceArray = mapper.createArrayNode();
+                for (InstanceServiceMXBean.Type serviceType : resourceBean.retrieveInstanceServices(getInstanceName())) {
+                    InstanceServiceMXBean serviceBean = getBeanSource().getInstanceServiceMXBean(getDomainName(), getInstanceName(), serviceType);
+                    ObjectNode serviceObject = mapper.createObjectNode();
+                    serviceObject.put("service", serviceType.toString());
+                    serviceObject.put("status", serviceBean.getStatus(resourceId).toString());
+                    serviceArray.add(serviceObject);
+                }
             
-                resourceObject.put("services",serviceArray);
+                resourceObject.set("services",serviceArray);
 
 
                 // Resource Tags
                 Set<String> resourceTags = resourceBean.getTags();
                 ArrayNode tagArray = mapper.valueToTree(resourceTags);
-                resourceObject.put("tags",tagArray);
+                resourceObject.set("tags",tagArray);
 
                 resourceArray.add(resourceObject);
             }
-            jsonOut.put("resources",resourceArray);
+            jsonOut.set("resources",resourceArray);
             //System.out.println(sb.toString());
             return new CommandResult(jsonOut.toString());
         } catch (Exception e) {

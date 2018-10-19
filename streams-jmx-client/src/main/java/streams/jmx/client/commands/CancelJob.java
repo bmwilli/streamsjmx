@@ -18,6 +18,7 @@ package streams.jmx.client.commands;
 
 import streams.jmx.client.jmx.JmxServiceContext;
 import streams.jmx.client.ServiceConfig;
+import streams.jmx.client.cli.BigIntegerConverter;
 import streams.jmx.client.cli.FileExistsValidator;
 import streams.jmx.client.Constants;
 import streams.jmx.client.ExitStatus;
@@ -46,8 +47,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Parameters(commandDescription = Constants.DESC_CANCELJOB)
 public class CancelJob extends AbstractInstanceCommand {
 
-    @Parameter(names = {"-j","--jobs"}, description = "A list of job ids delimited by commas", required = true)
-    private String jobIdString;
+    @Parameter(names = {"-j","--jobs"}, description = "A list of job ids delimited by commas", required = true, converter = BigIntegerConverter.class)
+    BigInteger jobId;
+    //private String jobIdString;
 
     @Parameter(names = "--force", description = "Forces quick cancellation of job", required = false)
     private boolean forceCancel = false;
@@ -70,7 +72,7 @@ public class CancelJob extends AbstractInstanceCommand {
     protected CommandResult doExecute() {
         try {
 
-            BigInteger jobId = new BigInteger(jobIdString);
+            //BigInteger jobId = new BigInteger(jobIdString);
 
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode jsonOut = mapper.createObjectNode();
