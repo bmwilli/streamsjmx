@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Parameters(commandDescription = Constants.DESC_GETDOMAINSTATE)
-public class GetDomainState extends AbstractInstanceCommand {
+public class GetDomainState extends AbstractDomainCommand {
 
     public GetDomainState() {
     }
