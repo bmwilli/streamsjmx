@@ -305,8 +305,15 @@ public class Main {
 				line = null;
 
 				line = console.readLine();
-				if (line == null || line.isEmpty()){
-					LOGGER.trace("Empty command line");
+				if (line == null) {
+					// EOF
+					LOGGER.debug("readLine returned null, interpreting as EOF and exit");
+					timeToQuit = true;
+					continue;
+				}
+				
+				if (line.isEmpty()){
+					LOGGER.trace("Empty command line, get next input");
 					continue;
 				} 
 
