@@ -31,6 +31,7 @@ public class Constants {
 		CMD_VERSION = "version",
 		CMD_GETDOMAINSTATE = "getdomainstate",
 		CMD_GETINSTANCESTATE = "getinstancestate",
+		CMD_LISTJOBS = "lsjobs",
 		CMD_SUBMITJOB = "submitjob",
 		CMD_CANCELJOB = "canceljob",
 		CMD_SNAPSHOTJOBS = "snapshotjobs",
@@ -41,6 +42,7 @@ public class Constants {
 	public static final String
 		DESC_GETDOMAINSTATE = "Get the state of the Streams domain",
 		DESC_GETINSTANCESTATE = "Get the state of the Streams instance",
+		DESC_LISTJOBS = "Get a list of the jobs running in an instance",
 		DESC_SUBMITJOB = "Submit Streams application to run in a Streams instance",
 		DESC_CANCELJOB = "Cancel Streams application",
 		DESC_SNAPSHOTJOBS = "Capture a snapshot of all jobs in the Streams instance",

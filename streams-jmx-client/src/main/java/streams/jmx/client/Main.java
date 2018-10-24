@@ -56,6 +56,7 @@ import streams.jmx.client.commands.GetDomainState;
 import streams.jmx.client.commands.GetInstanceState;
 import streams.jmx.client.commands.SubmitJob;
 import streams.jmx.client.commands.Help;
+import streams.jmx.client.commands.ListJobs;
 import streams.jmx.client.commands.Quit;
 import streams.jmx.client.commands.SnapshotJobs;
 import streams.jmx.client.commands.Version;
@@ -102,6 +103,7 @@ public class Main {
 		// cm.put(Constants.CMD_VERSION, new Version());
 		cm.put(Constants.CMD_GETDOMAINSTATE, new GetDomainState());
 		cm.put(Constants.CMD_GETINSTANCESTATE, new GetInstanceState());
+		cm.put(Constants.CMD_LISTJOBS, new ListJobs());
 		cm.put(Constants.CMD_SUBMITJOB, new SubmitJob());
 		cm.put(Constants.CMD_CANCELJOB, new CancelJob());
 		cm.put(Constants.CMD_SNAPSHOTJOBS, new SnapshotJobs());
