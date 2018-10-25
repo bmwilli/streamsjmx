@@ -70,7 +70,8 @@ public class GetDomainState extends AbstractDomainCommand {
                 ResourceMXBean resourceBean = getBeanSource().getResourceBean(domain.getName(), resourceId);
             //json
             ObjectNode resourceObject = mapper.createObjectNode();
-            resourceObject.put("resource",resourceId);
+            resourceObject.put("resourceid",resourceId);
+            resourceObject.put("displayname",resourceBean.getDisplayName());
             resourceObject.put("status",resourceBean.getStatus().toString());
             resourceArray.add(resourceObject);
             }
